@@ -1,0 +1,21 @@
+body {
+	margin: 0px !important;
+}
+
+.container {
+	width: 280px;
+	color: white;
+	background-color: #81b64c;
+	padding: 16px;
+}
+
+.title {
+	font-size: 18px;
+	font-weight: bold;
+}
+
+.status {
+	font-size: 14px;
+	margin-top: 4px;
+	font-style: italic;
+}
