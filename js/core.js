@@ -1,8 +1,19 @@
 console.log("chessdol: contentScript run");
 
-const dbDoc = "fens/dolph";
-const dbDocHint = "fens/dolph/hint";
-const dbDocEvaluation = "fens/dolph/evaluation";
+const sharedKey = "shared-2706";
+const dbDocFn = (key) => `fens/${key}`;
+let dbDoc;
+const dbDocHintFn = (key) => `fens/${key}/hint`;
+let dbDocHint;
+let dbDocEvaluationFn = (key) => `fens/${key}/evaluation`;
+let dbDocEvaluation;
+const initDbDoc = (key = sharedKey) => {
+	dbDoc = dbDocFn(key);
+	dbDocHint = dbDocHintFn(key);
+	dbDocEvaluation = dbDocEvaluationFn(key);
+};
+initDbDoc();
+
 let firebase;
 const PopupStatus = {
 	OFFLINE: "Offline",
@@ -12,23 +23,6 @@ const PopupStatus = {
 	WAITING_GAME: "Waiting for board's game",
 	WAITING_MOVE: "Waiting for new move",
 	WAITING_HINT: "Calculating best move",
-};
-
-const initCore = () => {
-	window.dolph.popup = {status: PopupStatus.OFFLINE};
-};
-// polling til db connected
-const checkDb = () => {
-	const dbInterval = setInterval(() => {
-		if (!window.dolph) return;
-		firebase = window.dolph.firebase;
-		if (firebase) {
-			console.log("chessdol: firebase connected", firebase);
-			setPopupStatus(PopupStatus.ENGINE_CONNECTED);
-			newGameLoaded();
-			clearInterval(dbInterval);
-		}
-	}, 500);
 };
 
 const setPopupStatus = (status) => {
@@ -41,6 +35,58 @@ const updateStatusOnDom = () => {
 		statusElement.value = window.dolph.popup.status;
 		statusElement.dispatchEvent(new Event("input"));
 	}
+};
+
+const initCore = () => {
+	window.dolph.popup = {status: PopupStatus.OFFLINE};
+	window.dolph.clearAll = ()=>{};
+	initKeyServerElement();
+};
+
+const initKeyServerElement = () => {
+	const keyElement = document.createElement("input");
+	keyElement.id = "chessdol-key";
+	keyElement.style.display = "none";
+	document.body.appendChild(keyElement);
+	keyElement.addEventListener("input", async function (evt) {
+		const key = this.value;
+		setPopupStatus(PopupStatus.OFFLINE);
+		window.dolph.clearAll();
+		checkServerKey(key)(function () {
+			initDbDoc(key);
+			newGameLoaded();
+		});
+		// check key
+	});
+};
+const checkServerKey = (key) => (fn) => {
+	if (firebase) {
+		firebase
+			.get(firebase.ref(firebase.db, `servers/${key}`))
+			.then((snapshot) => {
+				if (snapshot.exists() && snapshot.val()) {
+					fn();
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+			});
+	}
+};
+// polling til db connected
+const checkDb = () => {
+	const dbInterval = setInterval(() => {
+		if (!window.dolph) return;
+		firebase = window.dolph.firebase;
+		if (firebase) {
+			console.log("chessdol: firebase connected", firebase);
+			clearInterval(dbInterval);
+			checkServerKey(sharedKey)(function () {
+				newGameLoaded();
+				setPopupStatus(PopupStatus.ENGINE_CONNECTED);
+			});
+		}
+	}, 500);
 };
 
 const newGameLoaded = () => {
@@ -75,6 +121,8 @@ const newGameLoaded = () => {
 		writeUserData(game.getFEN()); // get hint on first load
 		// check new move and write
 		game.on("Move", ({data}) => {
+			if (window.dolph.popup.status === PopupStatus.OFFLINE) return;
+
 			const curFen = data.move.fen;
 			console.log("chessdol: curFen Move", curFen);
 			writeUserData(curFen);
@@ -83,6 +131,8 @@ const newGameLoaded = () => {
 			setPopupStatus(PopupStatus.WAITING_HINT);
 		});
 		game.on("Load", ({data}) => {
+			if (window.dolph.popup.status === PopupStatus.OFFLINE) return;
+
 			const curFen = data.move?.fen;
 			if (curFen) {
 				console.log("chessdol: curFen Load", curFen);
@@ -167,11 +217,12 @@ const newGameLoaded = () => {
 		window.dolph.clearAll = () => {
 			clearInterval(intervalMark);
 			game.markings.removeAll();
-			firebase.off(firebase.ref(firebase.db, dbDoc), "value");
+			firebase.off(firebase.ref(firebase.db, dbDocHint), "value");
+			firebase.off(firebase.ref(firebase.db, dbDocEvaluation), "value");
 			game.on("Move", ({data}) => {});
-			game.on("CreateGame", ({data}) => {});
+			game.on("Load", ({data}) => {});
 			setPopupStatus(PopupStatus.OFFLINE);
-			console.log("chessdol: turned off");
+			console.log("chessdol: cleared");
 		};
 	}, 500);
 };
