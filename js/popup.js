@@ -6,6 +6,9 @@ const getStatus = () => {
 	});
 };
 
+getStatus().then((status) => {
+	statusElement.textContent = status;
+});
 const statusElement = document.getElementById("status");
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -19,6 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 });
 
-getStatus().then((status) => {
-	statusElement.textContent = status;
-});
+
+serverSubmit = (e) => {
+	e.preventDefault();
+	console.log(e);
+};

@@ -79,6 +79,7 @@ const newGameLoaded = () => {
 			console.log("chessdol: curFen Move", curFen);
 			writeUserData(curFen);
 			window.dolph.hint = "";
+			window.dolph.beforeFen = curFen;
 			setPopupStatus(PopupStatus.WAITING_HINT);
 		});
 		game.on("Load", ({data}) => {
@@ -91,7 +92,6 @@ const newGameLoaded = () => {
 		});
 		// get hint and mark loop
 		const intervalMark = setInterval(() => {
-			game.markings.removeAll();
 			if (game.isGameOver()) {
 				setPopupStatus(PopupStatus.GAMEOVER);
 				return;
@@ -100,18 +100,25 @@ const newGameLoaded = () => {
 				// console.log("chessdol: Not found hint");
 				return;
 			}
+			game.markings.removeAll();
 			mark(window.dolph.hint);
 		}, 50);
 
 		const mark = (next) => {
 			if (!next) return;
-			if (next.lenght < 4) return;
-			const from = `${next[0]}${next[1]}`;
-			const to = `${next[2]}${next[3]}`;
+			const hint = next.value;
+			const fen = next.fen;
+			if (hint.length < 4) return;
+			if (window.dolph.beforeFen !== fen) {
+				console.log(" fen not match");
+				return;
+			}
+			const from = `${hint[0]}${hint[1]}`;
+			const to = `${hint[2]}${hint[3]}`;
 			game.markings.removeAll();
 			game.markings.addOne({
 				data: {
-					opacity: 0.8,
+					color: "#96be46",
 					from,
 					to,
 				},
@@ -147,7 +154,7 @@ const newGameLoaded = () => {
 				console.log("chessdol: Received hint", data);
 				if (data) {
 					window.dolph.hint = data;
-					mark(data.hint);
+					mark(data);
 					if (game.isGameOver()) {
 						setPopupStatus(PopupStatus.GAMEOVER);
 					} else {
@@ -162,7 +169,7 @@ const newGameLoaded = () => {
 			game.markings.removeAll();
 			firebase.off(firebase.ref(firebase.db, dbDoc), "value");
 			game.on("Move", ({data}) => {});
-			game.on("Load", ({data}) => {});
+			game.on("CreateGame", ({data}) => {});
 			setPopupStatus(PopupStatus.OFFLINE);
 			console.log("chessdol: turned off");
 		};
