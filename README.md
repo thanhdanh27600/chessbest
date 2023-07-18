@@ -1,7 +1,11 @@
+![ChessBest Icon](https://raw.githubusercontent.com/thanhdanh27600/chessbest/main/assets/ext-icon.png)
+
 # ChessBest
 A chess.com extension for finding the best moves and evaluating your live game.
 
-![ChessBest Icon](https://raw.githubusercontent.com/thanhdanh27600/chessbest/main/assets/ext-icon.png)
+![ChessBest Demo](https://gist.github.com/thanhdanh27600/2186c00731e3851de686eddf48c76b90/raw/40be88df956c49ba9e7431fbd035b85b7008992f/gif-1.gif)
+
+![ChessBest Popup](https://gist.github.com/thanhdanh27600/2186c00731e3851de686eddf48c76b90/raw/40be88df956c49ba9e7431fbd035b85b7008992f/img-1.png)
 
 ## Features
 
