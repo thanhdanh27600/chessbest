@@ -126,7 +126,6 @@ const newGameLoaded = () => {
 			const curFen = data.move.fen;
 			console.log("chessdol: curFen Move", curFen);
 			writeUserData(curFen);
-			window.dolph.hint = "";
 			window.dolph.beforeFen = curFen;
 			setPopupStatus(PopupStatus.WAITING_HINT);
 		});

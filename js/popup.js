@@ -13,11 +13,6 @@ const statusElement = document.getElementById("status");
 
 document.addEventListener("DOMContentLoaded", () => {
 	chrome.runtime.onMessage.addListener((obj, sender, response) => {
-		// console.log(
-		// 	sender.tab
-		// 		? "from a content script:" + sender.tab.url
-		// 		: "from the extension"
-		// );
 		const {status} = obj;
 		chrome.storage.sync.set({
 			status,

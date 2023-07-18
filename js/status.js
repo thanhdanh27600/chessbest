@@ -9,11 +9,6 @@ statusElement.addEventListener("input", async function (evt) {
 });
 
 chrome.runtime.onMessage.addListener((obj, sender, response) => {
-	// console.log(
-	// 	sender.tab
-	// 		? "from a content script:" + sender.tab.url
-	// 		: "from the extension"
-	// );
 	const {key} = obj;
 	const keyElement = document.getElementById("chessdol-key");
 	if (keyElement) {
