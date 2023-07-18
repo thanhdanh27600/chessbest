@@ -1,33 +1,34 @@
 # ChessBest
-A chess dot com extension for finding the best moves and evaluating your live game.
+A chess.com extension for finding the best moves and evaluating your live game.
 
 ![ChessBest Icon](https://raw.githubusercontent.com/thanhdanh27600/chessbest/main/assets/ext-icon.png)
 
 ## Features
 
-- Utilizes a SELF-HOST chess server and running YOUR Stockfish engine.
-- Best move & Evaluation bar feedback for each move.
-- You will move piece by yourself (or chess dot com will noticed).
-- Client-side not involved any chess engine. (or chess dot com will noticed)
-- For improve chess skills purpose only!!
+- Utilizes a self-hosted chess server and runs your Stockfish engine.
+- Provides feedback on the best move and evaluation bar for each move.
+- You will move the pieces yourself (or chess.com will take notice).
+- Client-side does not involve any chess engine (or chess.com will take notice).
+- For the purpose of improving chess skills only!
 
-## Installation Client-side
+## Installation (Client-side)
 
 1. Download the extension.
-2. Go to chrome://extensions in a new tab, or use Manage extensions page.
-3. Enable `Developer mode`, then `Load unpacked`. Select root folder (contains manifest.json)
+2. Go to chrome://extensions in a new tab or use the Manage extensions page.
+3. Enable `Developer mode`, then click `Load unpacked`. Select the root folder. (containing `manifest.json`).
 
-*If stuck, see [chrome's instructions](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked)*.
+*If you get stuck, refer to [Chrome's instructions](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked)*.
 
-## Installation Server-side
+## Installation (Server-side)
 *To be updated*
+
 ## Usage
 
-1. Start a classic game (or puzzle) on chess dot com
+1. Start a classic game (or puzzle) on chess.com.
 2. ChessBest will automatically run.
-2. Chess engine status on extension icon (popup).
-3. You may need play 1 move to see the response.
+3. The chess engine's status can be seen on the extension icon (popup).
+4. You may need to make one move to see the response.
 
 ## Support
 
-If you need assistance or have any questions, please reach me out in `Issues`.
+If you need assistance or have any questions, please reach me out in the `Issues` section.
