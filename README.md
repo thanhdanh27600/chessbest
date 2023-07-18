@@ -9,8 +9,8 @@ A chess.com extension for finding the best moves and evaluating your live game.
 
 ## Features
 
-- Utilizes a self-hosted chess server and runs your Stockfish engine.
-- Provides feedback on the best move and evaluation bar for each move.
+- You'll host your chess server and you'll run your Stockfish engine.
+- Calculate & mark the best move and update evaluation bar for each move.
 - You will move the pieces yourself (or chess.com will take notice).
 - Client-side does not involve any chess engine (or chess.com will take notice).
 - For the purpose of improving chess skills only!
