@@ -31,9 +31,3 @@ A chess dot com extension for finding the best moves and evaluating your live ga
 ## Support
 
 If you need assistance or have any questions, please reach me out in `Issues`.
-
-## Acknowledgements
-
-We would like to express our gratitude to the developers of Stockfish for providing the powerful chess engine that powers the evaluation capabilities of ChessBest.
-
-So, whether you're a beginner looking to learn the ropes or an experienced player striving to reach new heights, ChessBest is here to guide you towards success. Download the extension today and experience the power of this indispensable tool as you master the art of chess.
