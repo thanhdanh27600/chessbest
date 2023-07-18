@@ -18,7 +18,7 @@ A chess.com extension for finding the best moves and evaluating your live game.
 ## Installation (Client-side)
 
 1. Download the extension.
-2. Go to `chrome://extensions`` in a new tab or use the Manage extensions page.
+2. Go to `chrome://extensions` in a new tab or use the Manage extensions page.
 3. Enable `Developer mode`, then click `Load unpacked`. Select the root folder. (containing `manifest.json`).
 
 *If you get stuck, refer to [Chrome's instructions](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked)*.
