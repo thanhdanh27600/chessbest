@@ -11,14 +11,16 @@ A chess dot com extension for finding the best moves and evaluating your live ga
 - Client-side not involved any chess engine. (or chess dot com will noticed)
 - For improve chess skills purpose only!!
 
-## Installation
+## Installation Client-side
 
-1. Download the extension
+1. Download the extension.
 2. Go to chrome://extensions in a new tab, or use Manage extensions page.
 3. Enable `Developer mode`, then `Load unpacked`. Select root folder (contains manifest.json)
 
 *If stuck, see [chrome's instructions](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked)*.
 
+## Installation Server-side
+*To be updated*
 ## Usage
 
 1. Start a classic game (or puzzle) on chess dot com
