@@ -149,7 +149,6 @@ const newGameLoaded = () => {
 				// console.log("chessdol: Not found hint");
 				return;
 			}
-			game.markings.removeAll();
 			mark(window.dolph.hint);
 		}, 50);
 
