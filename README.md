@@ -23,13 +23,14 @@ A chess.com extension for finding the best moves and evaluating your live game.
 
 *Note: if you cloned the repo, select the `dist` folder.*
 
+
+*If you get stuck, refer to [Chrome's instructions](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked)*.
+
 ## How to build (Client-side)
 
 1. Clone the repo.
 2. Install dependencies, run `npm install` or `yarn`.
 3. Build the extension to `dist` folder by `npm run build` or `yarn build`.
-
-*If you get stuck, refer to [Chrome's instructions](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked)*.
 
 ## Installation (Server-side)
 *To be updated*
