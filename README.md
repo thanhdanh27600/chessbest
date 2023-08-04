@@ -17,7 +17,7 @@ A chess.com extension for finding the best moves and evaluating your live game.
 
 ## Installation (Client-side)
 
-1. Clone the repo or [download the latest release](https://github.com/thanhdanh27600/chessbest/releases/tag/v1).
+1. Clone the repo or [download the latest release](https://github.com/thanhdanh27600/chessbest/releases).
 2. Go to `chrome://extensions` in a new tab or use the Manage extensions page.
 3. Enable `Developer mode`, then click `Load unpacked` and select root folder (containing `manifest.json`).
 
