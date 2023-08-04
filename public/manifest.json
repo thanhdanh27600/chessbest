@@ -1,0 +1,53 @@
+{
+  "name": "Chessbest",
+  "version": "0.1.0",
+  "description": "Best move and evaluation bar. Boost your skills on chess dot com",
+  "permissions": [
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://www.chess.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.chess.com/*"
+      ],
+      "js": [
+        "firebase.js",
+        "core.js"
+      ],
+      "world": "MAIN",
+      "run_at": "document_end"
+    },
+    {
+      "matches": [
+        "https://www.chess.com/*"
+      ],
+      "js": [
+        "status.js"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "popup.js"
+      ],
+      "matches": [
+        "https://chess.com/*"
+      ]
+    }
+  ],
+  "action": {
+    "default_icon": {
+      "16": "assets/ext-icon.png",
+      "24": "assets/ext-icon.png",
+      "32": "assets/ext-icon.png"
+    },
+    "default_title": "Chessbest's status",
+    "default_popup": "index.html"
+  },
+  "manifest_version": 3
+}

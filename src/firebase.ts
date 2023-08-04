@@ -1,6 +1,6 @@
 // INIT
 const initFirebase = () => {
-	window.dolph = {};
+	(window as any).dolph = {};
 	// FIREBASE
 	const fb = document.createElement("script");
 	fb.type = "module";

@@ -15,8 +15,8 @@
         "https://www.chess.com/*"
       ],
       "js": [
-        "js/firebase.js",
-        "js/core.js"
+        "firebase.js",
+        "core.js"
       ],
       "world": "MAIN",
       "run_at": "document_end"
@@ -26,14 +26,14 @@
         "https://www.chess.com/*"
       ],
       "js": [
-        "js/status.js"
+        "status.js"
       ]
     }
   ],
   "web_accessible_resources": [
     {
       "resources": [
-        "js/popup.js"
+        "popup.js"
       ],
       "matches": [
         "https://chess.com/*"

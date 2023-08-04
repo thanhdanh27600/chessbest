@@ -1,12 +1,42 @@
 console.log("chessdol: contentScript run");
 
+interface Dolph {
+	popup: {status: string};
+	clearAll: () => void;
+	hint?: Hint;
+	beforeFen: string;
+	firebase: any;
+	game: any;
+	evaluationType: string;
+	evaluationValue: string;
+}
+
+type Board =
+	| undefined
+	| {
+			game: any;
+	  };
+
+type DataGame = {
+	move: {
+		fen: string;
+	};
+};
+
+interface Hint {
+	value: string;
+	fen: string;
+}
+
+const W: typeof window & {dolph: Dolph} = window as any;
+
 const sharedKey = "shared-2706";
-const dbDocFn = (key) => `fens/${key}`;
-let dbDoc;
-const dbDocHintFn = (key) => `fens/${key}/hint`;
-let dbDocHint;
-let dbDocEvaluationFn = (key) => `fens/${key}/evaluation`;
-let dbDocEvaluation;
+const dbDocFn = (key: string) => `fens/${key}`;
+let dbDoc: string;
+const dbDocHintFn = (key: string) => `fens/${key}/hint`;
+let dbDocHint: string;
+let dbDocEvaluationFn = (key: string) => `fens/${key}/evaluation`;
+let dbDocEvaluation: string;
 const initDbDoc = (key = sharedKey) => {
 	dbDoc = dbDocFn(key);
 	dbDocHint = dbDocHintFn(key);
@@ -14,7 +44,7 @@ const initDbDoc = (key = sharedKey) => {
 };
 initDbDoc();
 
-let firebase;
+let firebase: any = {};
 const PopupStatus = {
 	OFFLINE: "Offline",
 	ENGINE_CONNECTED: "Connected to chess engine",
@@ -25,21 +55,23 @@ const PopupStatus = {
 	WAITING_HINT: "Calculating best move",
 };
 
-const setPopupStatus = (status) => {
-	window.dolph.popup.status = status;
+const setPopupStatus = (status: string) => {
+	W.dolph.popup.status = status;
 	updateStatusOnDom();
 };
 const updateStatusOnDom = () => {
-	let statusElement = document.getElementById("chessdol-status");
-	if (statusElement) {
-		statusElement.value = window.dolph.popup.status;
-		statusElement.dispatchEvent(new Event("input"));
+	const statusDisplayElement = document.getElementById(
+		"statusDisplay"
+	) as HTMLInputElement;
+	if (statusDisplayElement) {
+		statusDisplayElement.value = W.dolph.popup.status;
+		statusDisplayElement.dispatchEvent(new Event("input"));
 	}
 };
 
 const initCore = () => {
-	window.dolph.popup = {status: PopupStatus.OFFLINE};
-	window.dolph.clearAll = ()=>{};
+	W.dolph.popup = {status: PopupStatus.OFFLINE};
+	W.dolph.clearAll = () => {};
 	initKeyServerElement();
 };
 
@@ -51,7 +83,7 @@ const initKeyServerElement = () => {
 	keyElement.addEventListener("input", async function (evt) {
 		const key = this.value;
 		setPopupStatus(PopupStatus.OFFLINE);
-		window.dolph.clearAll();
+		W.dolph.clearAll();
 		checkServerKey(key)(function () {
 			initDbDoc(key);
 			newGameLoaded();
@@ -59,16 +91,16 @@ const initKeyServerElement = () => {
 		// check key
 	});
 };
-const checkServerKey = (key) => (fn) => {
+const checkServerKey = (key: string) => (fn: () => void) => {
 	if (firebase) {
 		firebase
 			.get(firebase.ref(firebase.db, `servers/${key}`))
-			.then((snapshot) => {
+			.then((snapshot: any) => {
 				if (snapshot.exists() && snapshot.val()) {
 					fn();
 				}
 			})
-			.catch((error) => {
+			.catch((error: any) => {
 				console.error(error);
 			});
 	}
@@ -76,8 +108,8 @@ const checkServerKey = (key) => (fn) => {
 // polling til db connected
 const checkDb = () => {
 	const dbInterval = setInterval(() => {
-		if (!window.dolph) return;
-		firebase = window.dolph.firebase;
+		if (!W.dolph) return;
+		firebase = W.dolph.firebase;
 		if (firebase) {
 			console.log("chessdol: firebase connected", firebase);
 			clearInterval(dbInterval);
@@ -92,7 +124,9 @@ const checkDb = () => {
 const newGameLoaded = () => {
 	const loopAndAction = setInterval(() => {
 		setPopupStatus(PopupStatus.WAITING_BOARD);
-		const board = document.getElementsByTagName("chess-board")[0];
+		const board = document.getElementsByTagName(
+			"chess-board"
+		)[0] as any as Board;
 		if (!board) {
 			console.log("chessdol: Not found Board");
 			return;
@@ -105,10 +139,10 @@ const newGameLoaded = () => {
 		}
 		setPopupStatus(PopupStatus.WAITING_MOVE);
 		clearInterval(loopAndAction);
-		window.dolph.game = game;
+		W.dolph.game = game;
 		initEvaluate();
 
-		const writeUserData = (fen) => {
+		const writeUserData = (fen: string) => {
 			console.log("chessdol: Writing...", fen);
 			firebase.set(firebase.ref(firebase.db, dbDoc), {
 				fen,
@@ -120,17 +154,17 @@ const newGameLoaded = () => {
 		}
 		writeUserData(game.getFEN()); // get hint on first load
 		// check new move and write
-		game.on("Move", ({data}) => {
-			if (window.dolph.popup.status === PopupStatus.OFFLINE) return;
+		game.on("Move", ({data}: {data: DataGame}) => {
+			if (W.dolph.popup.status === PopupStatus.OFFLINE) return;
 
 			const curFen = data.move.fen;
 			console.log("chessdol: curFen Move", curFen);
 			writeUserData(curFen);
-			window.dolph.beforeFen = curFen;
+			W.dolph.beforeFen = curFen;
 			setPopupStatus(PopupStatus.WAITING_HINT);
 		});
-		game.on("Load", ({data}) => {
-			if (window.dolph.popup.status === PopupStatus.OFFLINE) return;
+		game.on("Load", ({data}: {data: DataGame}) => {
+			if (W.dolph.popup.status === PopupStatus.OFFLINE) return;
 
 			const curFen = data.move?.fen;
 			if (curFen) {
@@ -145,19 +179,19 @@ const newGameLoaded = () => {
 				setPopupStatus(PopupStatus.GAMEOVER);
 				return;
 			}
-			if (!window.dolph.hint) {
+			if (!W.dolph.hint) {
 				// console.log("chessdol: Not found hint");
 				return;
 			}
-			mark(window.dolph.hint);
+			mark(W.dolph.hint);
 		}, 50);
 
-		const mark = (next) => {
+		const mark = (next: Hint) => {
 			if (!next) return;
 			const hint = next.value;
 			const fen = next.fen;
 			if (hint.length < 4) return;
-			if (window.dolph.beforeFen !== fen) {
+			if (W.dolph.beforeFen !== fen) {
 				console.log(" fen not match");
 				return;
 			}
@@ -174,24 +208,24 @@ const newGameLoaded = () => {
 			});
 		};
 
-		const listenerEvaluation = (fn) =>
+		const listenerEvaluation = (fn: (snapshot: any) => void) =>
 			firebase.onValue(firebase.ref(firebase.db, dbDocEvaluation), fn);
 
 		if (!listenerEvaluation) {
 			console.log("chessdol: Not found listener evaluation");
 		} else {
-			listenerEvaluation((snapshot) => {
+			listenerEvaluation((snapshot: any) => {
 				const data = snapshot.val();
 				console.log("chessdol: Received evaluation", data);
 				setTimeout(updateEvaluate);
 				if (data) {
-					window.dolph.evaluationType = data.evaluationType;
-					window.dolph.evaluationValue = data.evaluationValue;
+					W.dolph.evaluationType = data.evaluationType;
+					W.dolph.evaluationValue = data.evaluationValue;
 				}
 			});
 		}
 
-		const listenerHint = (fn) =>
+		const listenerHint = (fn: (snapshot: any) => void) =>
 			firebase.onValue(firebase.ref(firebase.db, dbDocHint), fn);
 
 		if (!listenerHint) {
@@ -201,7 +235,7 @@ const newGameLoaded = () => {
 				const data = snapshot.val();
 				console.log("chessdol: Received hint", data);
 				if (data) {
-					window.dolph.hint = data;
+					W.dolph.hint = data;
 					mark(data);
 					if (game.isGameOver()) {
 						setPopupStatus(PopupStatus.GAMEOVER);
@@ -212,13 +246,13 @@ const newGameLoaded = () => {
 			});
 		}
 
-		window.dolph.clearAll = () => {
+		W.dolph.clearAll = () => {
 			clearInterval(intervalMark);
 			game.markings.removeAll();
 			firebase.off(firebase.ref(firebase.db, dbDocHint), "value");
 			firebase.off(firebase.ref(firebase.db, dbDocEvaluation), "value");
-			game.on("Move", ({data}) => {});
-			game.on("Load", ({data}) => {});
+			game.on("Move", ({data}: {data: DataGame}) => {});
+			game.on("Load", ({data}: {data: DataGame}) => {});
 			setPopupStatus(PopupStatus.OFFLINE);
 			console.log("chessdol: cleared");
 		};
@@ -245,12 +279,12 @@ const initEvaluate = () => {
 };
 
 const updateEvaluate = () => {
-	const type = window.dolph.evaluationType;
-	const value = window.dolph.evaluationValue;
+	const type = W.dolph.evaluationType;
+	const value = W.dolph.evaluationValue;
 
 	const whiteBar = document.getElementsByClassName(
 		"evaluation-bar-color evaluation-bar-white"
-	)[0];
+	)[0] as any;
 	const score = document.getElementsByClassName(
 		"evaluation-bar-scoreAbbreviated"
 	)[0];
@@ -263,7 +297,8 @@ const updateEvaluate = () => {
 		return;
 	}
 	const scoreHover = document.getElementsByClassName("evaluation-bar-score")[0];
-	if (value < 0) {
+	const parseValue = +value;
+	if (parseValue < 0) {
 		score.classList.remove("evaluation-bar-dark");
 		score.classList.add("evaluation-bar-light");
 
@@ -276,12 +311,12 @@ const updateEvaluate = () => {
 		scoreHover.classList.remove("evaluation-bar-light");
 		scoreHover.classList.add("evaluation-bar-dark");
 	}
-	const scoreValueIfCp = value / 100;
-	const scoreValueIfMate = value;
+	const scoreValueIfCp = parseValue / 100;
+	const scoreValueIfMate = parseValue;
 	const scoreValueDisplay = parseFloat(scoreValueIfCp.toFixed(1));
 	const SCALE = 5;
 	if (type === "cp") {
-		score.textContent = scoreValueDisplay;
+		score.textContent = scoreValueDisplay + "";
 		scoreHover.textContent = `${
 			scoreValueIfCp > 0 ? "+" : ""
 		}${scoreValueIfCp}`;

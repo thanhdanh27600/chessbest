@@ -1,0 +1,43 @@
+body {
+	margin: 0px !important;
+}
+
+.container {
+	width: 280px;
+	color: white;
+	background-color: #81b64c;
+	padding: 16px;
+}
+.server {
+	margin-bottom: 8px;
+}
+
+.title {
+	font-size: 18px;
+	font-weight: bold;
+}
+
+.status {
+	font-size: 14px;
+	margin-top: 4px;
+	font-style: italic;
+}
+
+button {
+	background-color: #468b00;
+	border: none;
+	color: white;
+	padding: 4px 5px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	margin: 4px 2px;
+	cursor: pointer;
+}
+
+input {
+	border: 1px solid #ccc !important;
+	padding: 4px;
+	display: inline-flex;
+	border-radius: 4px;
+}
