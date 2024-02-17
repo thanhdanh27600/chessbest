@@ -69,6 +69,16 @@ const updateStatusOnDom = () => {
 	}
 };
 
+const updateLogOnDom = () => {
+	const logDisplayElement = document.getElementById(
+		"logDisplay"
+	) as HTMLInputElement;
+	if (logDisplayElement) {
+		logDisplayElement.value = W.dolph.popup.status;
+		logDisplayElement.dispatchEvent(new Event("input"));
+	}
+};
+
 const initCore = () => {
 	W.dolph.popup = {status: PopupStatus.OFFLINE};
 	W.dolph.clearAll = () => {};

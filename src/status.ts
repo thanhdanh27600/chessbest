@@ -10,6 +10,18 @@ element.addEventListener("input", async function (evt) {
 	} catch (error) {}
 });
 
+const elementLog = document.createElement("input") as HTMLInputElement;
+element.id = "logDisplay";
+element.style.display = "none";
+document.body.appendChild(element);
+element.addEventListener("input", async function (evt) {
+	try {
+		await chrome.runtime.sendMessage({
+			log: (this as HTMLInputElement).value,
+		});
+	} catch (error) {}
+});
+
 chrome.runtime.onMessage.addListener((obj, sender, response) => {
 	const {key} = obj;
 	const keyElement = document.getElementById(

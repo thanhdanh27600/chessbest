@@ -18,7 +18,7 @@ const initFirebase = () => {
     projectId: "chess-dolph",
     storageBucket: "chess-dolph.appspot.com",
     messagingSenderId: "339694595527",
-    appId: "1:339694595527:web:8a6d674b53ef3f0d28fde2"
+    appId: "1:339694595527:web:8a6d674b53ef3f0d28fde2",
     databaseURL: "https://chess-dolph-default-rtdb.asia-southeast1.firebasedatabase.app"
   };
 

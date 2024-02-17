@@ -23,6 +23,13 @@ body {
 	font-style: italic;
 }
 
+.log {
+	font-size: 10px;
+	margin-top: 4px;
+	height: 10rem;
+	overflow-y: scroll;
+}
+
 button {
 	background-color: #468b00;
 	border: none;
