@@ -18,7 +18,7 @@ const initFirebase = () => {
     projectId: "chess-dolph",
     storageBucket: "chess-dolph.appspot.com",
     messagingSenderId: "339694595527",
-    appId: "1:339694595527:web:8a6d674b53ef3f0d28fde2",
+    appId: "1:339694595527:web:8a6d674b53ef3f0d28fde2"
     databaseURL: "https://chess-dolph-default-rtdb.asia-southeast1.firebasedatabase.app"
   };
 
@@ -42,6 +42,8 @@ const initFirebase = () => {
 	var link = document.createElement("link");
 	link.rel = "stylesheet";
 	link.type = "text/css";
+	link.crossOrigin = "anonymous";
+
 	link.href =
 		"https://rawcdn.githack.com/thanhdanh27600/chess-server/55a4085ffc1ec44c8dc2e251050ab9679bfc4514/client/evaluation.css";
 	head.appendChild(link);
