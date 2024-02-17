@@ -22,29 +22,20 @@ getStatus().then((status: string) => {
 	statusElement.textContent = status;
 });
 
-getLog().then((log: string) => {
-	if (!logElement) return;
-	logElement.textContent += log;
-});
-
 document.addEventListener("DOMContentLoaded", () => {
 	// status listener
 	chrome.runtime.onMessage.addListener((obj, sender, response) => {
-		if (!statusElement) return;
-		const {status} = obj;
+		const {status, log} = obj;
 		chrome.storage.sync.set({
 			status,
 		});
-		statusElement.textContent = status;
-	});
-	// log listener
-	chrome.runtime.onMessage.addListener((obj, sender, response) => {
-		if (!logElement) return;
-		const {log} = obj;
-		chrome.storage.sync.set({
-			log,
+		getLog().then((oldLog: string) => {
+			chrome.storage.sync.set({
+				log: oldLog + log,
+			});
 		});
-		logElement.textContent = log;
+		if (statusElement) statusElement.textContent = status;
+		if (logElement) logElement.textContent += `\n${log}`;
 	});
 });
 
