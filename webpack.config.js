@@ -1,5 +1,9 @@
 const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
+
+const webpack = require('webpack');
+
+
 module.exports = {
 	mode: "production",
 	entry: {
@@ -25,8 +29,15 @@ module.exports = {
 		],
 	},
 	plugins: [
+		new webpack.HotModuleReplacementPlugin(),
 		new CopyPlugin({
-			patterns: [{from: ".", to: ".", context: "public"}],
+			patterns: [{ from: ".", to: ".", context: "public" }],
 		}),
 	],
+
+	devServer: {
+		hot: true,
+		open: true, // Optional: opens the browser automatically
+		port: 3000 // You can set your preferred port
+	},
 };
