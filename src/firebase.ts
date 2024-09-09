@@ -45,7 +45,7 @@ const initFirebase = () => {
 	link.crossOrigin = "anonymous";
 
 	link.href =
-		"https://rawcdn.githack.com/thanhdanh27600/chessbest/886edc225b3b1f326b8ae43564974cb49f5d5d86/dist/evaluation.css";
+		"https://rawcdn.githack.com/thanhdanh27600/chessbest/a565023e9758eb5220224317063edb3db463b41b/public/evaluation.css";
 	head.appendChild(link);
 };
 

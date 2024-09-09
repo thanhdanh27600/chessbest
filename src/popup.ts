@@ -34,8 +34,8 @@ document.addEventListener("DOMContentLoaded", () => {
 				log: oldLog + log,
 			});
 		});
-		if (statusElement) statusElement.textContent = status;
-		if (logElement) logElement.textContent += `\n${log}`;
+		if (statusElement && status) statusElement.textContent = status;
+		if (logElement && log) logElement.textContent += `\n${log}`;
 	});
 });
 

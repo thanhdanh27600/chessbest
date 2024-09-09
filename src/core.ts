@@ -26,23 +26,39 @@ interface Hint {
 	fen: string;
 }
 
-const updateLogOnDom = (value: string) => {
-	const logDisplayElement = document.getElementById(
-		"logDisplay"
-	) as HTMLInputElement;
-	if (logDisplayElement) {
-		logDisplayElement.value = value;
-		logDisplayElement.dispatchEvent(new Event("input"));
-	}
-};
+class Connector {
+	updateLogOnDom = (value: string) => {
+		if (!value.trim().length) return;
 
-const logger = (...arg: any[]) => {
-	console.log(...arg);
-	const value = JSON.stringify(arg);
-	updateLogOnDom(value);
-};
+		const logDisplayElement = document.getElementById(
+			"logDisplay"
+		) as HTMLInputElement;
+		if (logDisplayElement) {
+			logDisplayElement.value = value;
+			logDisplayElement.dispatchEvent(new Event("input"));
+		}
+	};
 
-logger("chessbest: contentScript run");
+	updateStatusOnDom = () => {
+		const statusDisplayElement = document.getElementById(
+			"statusDisplay"
+		) as HTMLInputElement;
+		if (statusDisplayElement) {
+			statusDisplayElement.value = W.dolph.popup.status;
+			statusDisplayElement.dispatchEvent(new Event("input"));
+		}
+	};
+
+	logger = (...arg: any[]) => {
+		console.log(...arg);
+		const value = JSON.stringify(arg);
+		this.updateLogOnDom(value);
+	};
+}
+
+const connector = new Connector();
+
+connector.logger("chessbest: contentScript run");
 
 const W: typeof window & {dolph: Dolph} = window as any;
 
@@ -73,16 +89,7 @@ const PopupStatus = {
 
 const setPopupStatus = (status: string) => {
 	W.dolph.popup.status = status;
-	updateStatusOnDom();
-};
-const updateStatusOnDom = () => {
-	const statusDisplayElement = document.getElementById(
-		"statusDisplay"
-	) as HTMLInputElement;
-	if (statusDisplayElement) {
-		statusDisplayElement.value = W.dolph.popup.status;
-		statusDisplayElement.dispatchEvent(new Event("input"));
-	}
+	connector.updateStatusOnDom();
 };
 
 const initCore = () => {
@@ -127,7 +134,7 @@ const checkDb = () => {
 		if (!W.dolph) return;
 		firebase = W.dolph.firebase;
 		if (firebase) {
-			logger("chessbest: firebase connected", firebase);
+			connector.logger("chessbest: firebase connected", firebase);
 			clearInterval(dbInterval);
 			checkServerKey(sharedKey)(function () {
 				newGameLoaded();
@@ -144,50 +151,49 @@ const newGameLoaded = () => {
 			"wc-chess-board"
 		)[0] as unknown as Board;
 		if (!board) {
-			logger("chessbest: Not found Board");
+			connector.logger("chessbest: Not found Board");
 			return;
 		}
 		setPopupStatus(PopupStatus.WAITING_GAME);
 		const game = board.game;
 		if (!game) {
-			logger("chessbest: Not found Board Game");
+			connector.logger("chessbest: Not found Board Game");
 			return;
 		}
 		setPopupStatus(PopupStatus.WAITING_MOVE);
 		clearInterval(loopAndAction);
 		W.dolph.game = game;
-		initEvaluate();
 
 		const writeUserData = (fen: string) => {
-			logger("chessbest: Writing...", fen);
+			connector.logger("chessbest: Writing...", fen);
 			firebase.set(firebase.ref(firebase.db, dbDoc), {
 				fen,
 			});
 		};
 		if (!writeUserData) {
-			logger("chessbest: Not found writeUserData");
+			connector.logger("chessbest: Not found writeUserData");
 			return;
 		}
 		writeUserData(game.getFEN()); // get hint on first load
 		// check new move and write
 		game.on("Move", ({data}: {data: DataGame}) => {
 			if (W.dolph.popup.status === PopupStatus.OFFLINE) return;
-
+			initEvaluate();
 			const curFen = data.move.fen;
-			logger("chessbest: curFen Move", curFen);
+			connector.logger("chessbest: curFen Move", curFen);
 			writeUserData(curFen);
 			W.dolph.beforeFen = curFen;
 			setPopupStatus(PopupStatus.WAITING_HINT);
 		});
 		game.on("Load", ({data}: {data: DataGame}) => {
 			if (W.dolph.popup.status === PopupStatus.OFFLINE) return;
+			initEvaluate();
 
 			const curFen = data.move?.fen;
 			if (curFen) {
-				logger("chessbest: curFen Load", curFen);
+				connector.logger("chessbest: curFen Load", curFen);
 				writeUserData(curFen);
 			}
-			initEvaluate();
 		});
 		// get hint and mark loop
 		const intervalMark = setInterval(() => {
@@ -196,7 +202,7 @@ const newGameLoaded = () => {
 				return;
 			}
 			if (!W.dolph.hint) {
-				logger("chessbest: Not found hint");
+				connector.logger("chessbest: Not found hint");
 				return;
 			}
 			mark(W.dolph.hint);
@@ -208,7 +214,7 @@ const newGameLoaded = () => {
 			const fen = next.fen;
 			if (hint.length < 4) return;
 			if (W.dolph.beforeFen !== fen) {
-				// logger("chessbest: fen not match");
+				// connector.logger("chessbest: fen not match");
 				return;
 			}
 			const from = `${hint[0]}${hint[1]}`;
@@ -228,11 +234,11 @@ const newGameLoaded = () => {
 			firebase.onValue(firebase.ref(firebase.db, dbDocEvaluation), fn);
 
 		if (!listenerEvaluation) {
-			logger("chessbest: Not found listener evaluation");
+			connector.logger("chessbest: Not found listener evaluation");
 		} else {
 			listenerEvaluation((snapshot: any) => {
 				const data = snapshot.val();
-				logger("chessbest: Received evaluation", data);
+				connector.logger("chessbest: Received evaluation", data);
 				setTimeout(updateEvaluate);
 				if (data) {
 					W.dolph.evaluationType = data.evaluationType;
@@ -245,11 +251,11 @@ const newGameLoaded = () => {
 			firebase.onValue(firebase.ref(firebase.db, dbDocHint), fn);
 
 		if (!listenerHint) {
-			logger("chessbest: Not found listener hint");
+			connector.logger("chessbest: Not found listener hint");
 		} else {
 			listenerHint((snapshot) => {
 				const data = snapshot.val();
-				logger("chessbest: Received hint", data);
+				connector.logger("chessbest: Received hint", data);
 				if (data) {
 					W.dolph.hint = data;
 					mark(data);
@@ -270,15 +276,18 @@ const newGameLoaded = () => {
 			game.on("Move", ({data}: {data: DataGame}) => {});
 			game.on("Load", ({data}: {data: DataGame}) => {});
 			setPopupStatus(PopupStatus.OFFLINE);
-			logger("chessbest: cleared");
+			connector.logger("chessbest: cleared");
 		};
 	}, 500);
 };
 
 const initEvaluate = () => {
-	const evaluationBoard = document.getElementsByTagName("evaluation-bar")[0];
+	const evaluationBoard = document.getElementById("board-layout-evaluation");
+	const existing =
+		document.getElementsByTagName("wc-evaluation-bar").length > 0;
+	if (existing) return;
 	if (evaluationBoard) {
-		evaluationBoard.innerHTML = `<evaluation-bar board-id="board-single" is-default-fen-automatic="true" data-cy="evaluation-bar"" data-dolph="ok" style="flex: 1 1 auto;">
+		evaluationBoard.innerHTML = `<wc-evaluation-bar board-id="board-single" is-default-fen-automatic="true" data-cy="evaluation-bar"" data-dolph="ok" style="flex: 1 1 auto;">
       <div class="evaluation-bar-bar undefined ">
         <span class="evaluation-bar-scoreAbbreviated"></span>
         <span class="evaluation-bar-score"></span>
@@ -288,9 +297,9 @@ const initEvaluate = () => {
           <div class="evaluation-bar-color evaluation-bar-white" style="transform: translate3d(0, 50%, 0)"></div>
         </div>
       </div>
-    </evaluation-bar>`;
+    </wc-evaluation-bar>`;
 	} else {
-		logger("chessbest: no evaluation board found");
+		connector.logger("chessbest: no evaluation board found");
 	}
 };
 
@@ -305,11 +314,11 @@ const updateEvaluate = () => {
 		"evaluation-bar-scoreAbbreviated"
 	)[0];
 	if (!type || !value) {
-		logger("chessbest: no evaluation found");
+		connector.logger("chessbest: no evaluation found");
 		return;
 	}
 	if (!score || !whiteBar) {
-		logger("chessbest: no evaluation element found");
+		connector.logger("chessbest: no evaluation element found");
 		return;
 	}
 	const scoreHover = document.getElementsByClassName("evaluation-bar-score")[0];
