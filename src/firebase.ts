@@ -45,7 +45,7 @@ const initFirebase = () => {
 	link.crossOrigin = "anonymous";
 
 	link.href =
-		"https://rawcdn.githack.com/thanhdanh27600/chessbest/a565023e9758eb5220224317063edb3db463b41b/public/evaluation.css";
+		"https://www.chess.com/chesscom-artifacts/packages/@chesscom/play-client/98.0.0/play-web.chunk.client.6db7a4fc.css";
 	head.appendChild(link);
 };
 
