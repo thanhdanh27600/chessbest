@@ -1,11 +1,11 @@
 ![ChessBest Icon](https://raw.githubusercontent.com/thanhdanh27600/chessbest/main/public/assets/ext-icon.png)
 
-# ChessBest
+# Chessbest
 A chess.com extension for finding the best moves and evaluating your live game.
 
-![ChessBest Demo](https://gist.github.com/thanhdanh27600/2186c00731e3851de686eddf48c76b90/raw/40be88df956c49ba9e7431fbd035b85b7008992f/gif-1.gif)
+![ChessBest Demo](https://gist.githubusercontent.com/thanhdanh27600/2186c00731e3851de686eddf48c76b90/raw/40be88df956c49ba9e7431fbd035b85b7008992f/gif-1.gif)
 
-![ChessBest Popup](https://gist.github.com/thanhdanh27600/2186c00731e3851de686eddf48c76b90/raw/40be88df956c49ba9e7431fbd035b85b7008992f/img-1.png)
+![ChessBest Popup](https://gist.githubusercontent.com/thanhdanh27600/2186c00731e3851de686eddf48c76b90/raw/40be88df956c49ba9e7431fbd035b85b7008992f/img-1.png)
 
 ## Features
 
@@ -38,7 +38,7 @@ A chess.com extension for finding the best moves and evaluating your live game.
 ## Usage
 
 1. Start a classic game (or puzzle) on chess.com.
-2. ChessBest will automatically run.
+2. Chessbest will automatically run.
 3. The chess engine's status can be seen on the extension icon (popup).
 4. You may need to make one move to see the response.
 
