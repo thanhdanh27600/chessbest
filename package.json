@@ -4,7 +4,7 @@
 	"main": "index.js",
 	"scripts": {
 		"build": "webpack --config webpack.config.js",
-		"dev": "webpack serve --config webpack.config.js --open"
+		"dev": "nodemon --exec \"yarn build\" --watch . --ext ts,js,html,css"
 	},
 	"author": "thanhdanh27600 <thanhdanh27600@gmail.com>",
 	"license": "MIT",
@@ -17,6 +17,6 @@
 		"webpack-cli": "^5.1.4"
 	},
 	"devDependencies": {
-		"webpack-dev-server": "^5.1.0"
+		"nodemon": "^3.1.4"
 	}
 }

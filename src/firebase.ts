@@ -1,6 +1,6 @@
 // INIT
 const initFirebase = () => {
-	(window as any).dolph = {};
+	(window as any).Chessbest = {};
 	// FIREBASE
 	const fb = document.createElement("script");
 	fb.type = "module";
@@ -33,7 +33,7 @@ const initFirebase = () => {
 	onValue,
 	off,
 	};
- window.dolph.firebase = firebase;
+ window.Chessbest.firebase = firebase;
     `;
 	document.body.appendChild(fb);
 
