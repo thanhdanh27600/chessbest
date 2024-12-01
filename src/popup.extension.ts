@@ -26,16 +26,21 @@ document.addEventListener("DOMContentLoaded", () => {
 	// status listener
 	chrome.runtime.onMessage.addListener((obj, sender, response) => {
 		const {status, log} = obj;
+		const shouldClearLog = log === "_CLEAR_";
 		chrome.storage.sync.set({
 			status,
 		});
 		getLog().then((oldLog: string) => {
+			const newLog = shouldClearLog ? "" : oldLog + log;
 			chrome.storage.sync.set({
-				log: oldLog + log,
+				log: newLog,
 			});
 		});
 		if (statusElement && status) statusElement.textContent = status;
-		if (logElement && log) logElement.textContent += `\n${log}`;
+		if (logElement && log) {
+			if (shouldClearLog) return (logElement.textContent = "");
+			logElement.textContent += `\n${log}`;
+		}
 	});
 });
 

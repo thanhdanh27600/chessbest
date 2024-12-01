@@ -6,6 +6,7 @@
 		"build": "webpack --config webpack.config.js",
 		"dev": "nodemon --exec \"yarn build\" --watch . --ext ts,js,html,css"
 	},
+	"packageManager": "yarn@1.22.22",
 	"author": "thanhdanh27600 <thanhdanh27600@gmail.com>",
 	"license": "MIT",
 	"dependencies": {

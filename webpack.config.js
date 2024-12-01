@@ -7,10 +7,14 @@ const webpack = require('webpack');
 module.exports = {
 	mode: "production",
 	entry: {
-		core: path.resolve(__dirname, ".", "src", "core.ts"),
-		popup: path.resolve(__dirname, ".", "src", "popup.ts"),
-		status: path.resolve(__dirname, ".", "src", "status.ts"),
-		firebase: path.resolve(__dirname, ".", "src", "firebase.ts"),
+		// scripts
+		firebase: path.resolve(__dirname, ".", "src", "firebase.script.ts"),
+		core: path.resolve(__dirname, ".", "src", "core.script.ts"),
+		// connectors
+		statusLog: path.resolve(__dirname, ".", "src", "statusLog.connector.ts"),
+		changeServer: path.resolve(__dirname, ".", "src", "changeServer.connector.ts"),
+		// extensions
+		popup: path.resolve(__dirname, ".", "src", "popup.extension.ts"),
 	},
 	output: {
 		path: path.join(__dirname, "./dist"),

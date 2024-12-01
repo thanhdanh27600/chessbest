@@ -47,6 +47,10 @@ class Connector {
 		}
 	};
 
+	clearLogger = () => {
+		this.updateLogOnDom("_CLEAR_");
+	};
+
 	logger = (...arg: any[]) => {
 		console.log(...arg);
 		const value = JSON.stringify(arg);
@@ -72,7 +76,6 @@ const initDbDoc = (key = sharedKey) => {
 	dbDocHint = dbDocHintFn(key);
 	dbDocEvaluation = dbDocEvaluationFn(key);
 };
-initDbDoc();
 
 let firebase: any = {};
 const PopupStatus = {
@@ -93,6 +96,7 @@ const setPopupStatus = (status: string) => {
 const initCore = () => {
 	W.Chessbest.popup = {status: PopupStatus.OFFLINE};
 	W.Chessbest.reset = () => {};
+	initDbDoc();
 	initKeyServerElement();
 };
 
@@ -194,13 +198,19 @@ const newGameLoaded = () => {
 			}
 		});
 		// get hint and mark loop
+		let throttleInterval = new Date().getTime();
 		const intervalMark = setInterval(() => {
 			if (game.isGameOver()) {
 				setPopupStatus(PopupStatus.GAMEOVER);
 				return;
 			}
 			if (!W.Chessbest.hint) {
-				connector.logger("chessbest: Not found hint");
+				const now = new Date().getTime();
+				if (now - throttleInterval > 1000) {
+					connector.clearLogger();
+					connector.logger("chessbest: Not found hint");
+					throttleInterval = now;
+				}
 				return;
 			}
 			mark(W.Chessbest.hint);
@@ -236,7 +246,7 @@ const newGameLoaded = () => {
 		} else {
 			listenerEvaluation((snapshot: any) => {
 				const data = snapshot.val();
-				if (W.Chessbest.beforeFen !== data.fen) {
+				if (W.Chessbest.beforeFen !== data?.evaluationFen) {
 					// connector.logger("chessbest: fen not match");
 					return;
 				}
