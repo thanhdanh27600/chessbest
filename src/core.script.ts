@@ -64,7 +64,7 @@ connector.logger("chessbest: contentScript run");
 
 const W: typeof window & {Chessbest: Chessbest} = window as any;
 
-const sharedKey = "shared-2706";
+const sharedKey = "dolph";
 const dbDocFn = (key: string) => `fens/${key}`;
 let dbDoc: string;
 const dbDocHintFn = (key: string) => `fens/${key}/hint`;
@@ -180,7 +180,7 @@ const newGameLoaded = () => {
 		// check new move and write
 		game.on("Move", ({data}: {data: DataGame}) => {
 			if (W.Chessbest.popup.status === PopupStatus.OFFLINE) return;
-			initEvaluate();
+			// initEvaluate();
 			const curFen = data.move.fen;
 			connector.logger("chessbest: curFen Move", curFen);
 			writeUserData(curFen);
@@ -189,7 +189,7 @@ const newGameLoaded = () => {
 		});
 		game.on("Load", ({data}: {data: DataGame}) => {
 			if (W.Chessbest.popup.status === PopupStatus.OFFLINE) return;
-			initEvaluate();
+			// initEvaluate();
 
 			const curFen = data.move?.fen;
 			if (curFen) {
@@ -199,44 +199,44 @@ const newGameLoaded = () => {
 		});
 		// get hint and mark loop
 		let throttleInterval = new Date().getTime();
-		const intervalMark = setInterval(() => {
-			if (game.isGameOver()) {
-				setPopupStatus(PopupStatus.GAMEOVER);
-				return;
-			}
-			if (!W.Chessbest.hint) {
-				const now = new Date().getTime();
-				if (now - throttleInterval > 1000) {
-					connector.clearLogger();
-					connector.logger("chessbest: Not found hint");
-					throttleInterval = now;
-				}
-				return;
-			}
-			mark(W.Chessbest.hint);
-		}, 50);
+		// const intervalMark = setInterval(() => {
+		// 	if (game.isGameOver()) {
+		// 		setPopupStatus(PopupStatus.GAMEOVER);
+		// 		return;
+		// 	}
+		// 	if (!W.Chessbest.hint) {
+		// 		const now = new Date().getTime();
+		// 		if (now - throttleInterval > 1000) {
+		// 			connector.clearLogger();
+		// 			connector.logger("chessbest: Not found hint");
+		// 			throttleInterval = now;
+		// 		}
+		// 		return;
+		// 	}
+		// 	mark(W.Chessbest.hint);
+		// }, 50);
 
-		const mark = (next: Hint) => {
-			if (!next) return;
-			const hint = next.value;
-			const fen = next.fen;
-			if (hint.length < 4) return;
-			if (W.Chessbest.beforeFen !== fen) {
-				// connector.logger("chessbest: fen not match");
-				return;
-			}
-			const from = `${hint[0]}${hint[1]}`;
-			const to = `${hint[2]}${hint[3]}`;
-			game.markings.removeAll();
-			game.markings.addOne({
-				data: {
-					color: "#96be46",
-					from,
-					to,
-				},
-				type: "arrow",
-			});
-		};
+		// const mark = (next: Hint) => {
+		// 	if (!next) return;
+		// 	const hint = next.value;
+		// 	const fen = next.fen;
+		// 	if (hint.length < 4) return;
+		// 	if (W.Chessbest.beforeFen !== fen) {
+		// 		// connector.logger("chessbest: fen not match");
+		// 		return;
+		// 	}
+		// 	const from = `${hint[0]}${hint[1]}`;
+		// 	const to = `${hint[2]}${hint[3]}`;
+		// 	game.markings.removeAll();
+		// 	game.markings.addOne({
+		// 		data: {
+		// 			color: "#96be46",
+		// 			from,
+		// 			to,
+		// 		},
+		// 		type: "arrow",
+		// 	});
+		// };
 
 		const listenerEvaluation = (fn: (snapshot: any) => void) =>
 			firebase.onValue(firebase.ref(firebase.db, dbDocEvaluation), fn);
@@ -270,7 +270,7 @@ const newGameLoaded = () => {
 				connector.logger("chessbest: Received hint", data);
 				if (data) {
 					W.Chessbest.hint = data;
-					mark(data);
+					// mark(data);
 					if (game.isGameOver()) {
 						setPopupStatus(PopupStatus.GAMEOVER);
 					} else {
@@ -281,7 +281,7 @@ const newGameLoaded = () => {
 		}
 
 		W.Chessbest.reset = () => {
-			clearInterval(intervalMark);
+			// clearInterval(intervalMark);
 			game.markings.removeAll();
 			firebase.off(firebase.ref(firebase.db, dbDocHint), "value");
 			firebase.off(firebase.ref(firebase.db, dbDocEvaluation), "value");
@@ -369,6 +369,18 @@ const updateEvaluate = () => {
 			scoreValueIfMate < 0 ? 100 : 0
 		}%, 0)`;
 	}
+};
+
+const notifyMove = () => {
+	const type = W.Chessbest.evaluationType;
+	const value = W.Chessbest.evaluationValue;
+
+	(window as any).toaster.add({
+		id: "chess.com",
+		duration: 3000,
+		icon: "circle-info",
+		content: `${type}-${value}.${W.Chessbest.hint}`,
+	});
 };
 
 // RUN
